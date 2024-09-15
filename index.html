@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <!-- CSS -->
-    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="./CSS/estilo.css">
     <!--JS-->
-    <script defer src="main.js"></script>
+    <script defer src="./JS/main.js"></script>
     <title>Matriz de Riesgo Laboral</title>
 </head>
 <body>
@@ -17,10 +17,10 @@
         <form>
             <label for="riesgo-seleccionado">Seleccione el Riesgo</label>
             <select id="riesgo-seleccionado">
-            <option value="Corte por objeto">Corte por objeto</option>
-            <option value="Caída de objeto">Caída de objeto</option>
-            <option value="Caída de persona en altura">Caída de persona en altura</option>
-            <option value="Atrapamiento">Atrapamiento</option>
+                <option value="Corte por objeto">Corte por objeto</option>
+                <option value="Caída de objeto">Caída de objeto</option>
+                <option value="Caída de persona en altura">Caída de persona en altura</option>
+                <option value="Atrapamiento">Atrapamiento</option>
             </select>
             <label for="probabilidad">Probabilidad (1, 2, 4, 8)</label>
             <input type="number" id="probabilidad" min="1" max="8">
@@ -30,6 +30,8 @@
         </form>
         <button type="button" id="borrar-riesgos">Borrar Todos los Riesgos</button>
         <div id="lista-riesgos"></div>
+        <h2>Historial de Cambios</h2>
+        <div id="historial-riesgos"></div>
         </div>
     </main>
 </body>
