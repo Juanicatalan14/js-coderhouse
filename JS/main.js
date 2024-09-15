@@ -103,10 +103,57 @@ function renderizarHistorial() {
     });
 }
 
-// Función para borrar una entrada del historial
+// Función para agregar o actualizar un riesgo en la lista
+function actualizarRiesgoLista(riesgoSeleccionado, probabilidad, impacto) {
+    const riesgo = riesgos.find(r => r.nombre === riesgoSeleccionado);
+
+    // Si ya existe en el historial, obtener el valor más alto entre el historial y la entrada actual
+    const entradasHistorial = historial.filter(h => h.riesgo === riesgoSeleccionado);
+    
+    let probabilidadMax = probabilidad;
+    let impactoMax = impacto;
+    
+    entradasHistorial.forEach(h => {
+        if (h.probabilidad > probabilidadMax) probabilidadMax = h.probabilidad;
+        if (h.impacto > impactoMax) impactoMax = h.impacto;
+    });
+
+    // Actualizar la lista de riesgos con los valores más altos
+    riesgo.probabilidad = probabilidadMax;
+    riesgo.impacto = impactoMax;
+}
+
+// Función para borrar una entrada del historial y actualizar la lista de riesgos
 function borrarEntradaHistorial(index) {
+    const entradaEliminada = historial[index];
     historial.splice(index, 1);
     actualizarStorage();
+    
+    // Verificar si el riesgo eliminado sigue existiendo en el historial
+    const entradasRestantes = historial.filter(h => h.riesgo === entradaEliminada.riesgo);
+
+    if (entradasRestantes.length > 0) {
+        // Si hay más entradas para este riesgo, actualizar la lista con los valores más altos
+        let probabilidadMax = 0;
+        let impactoMax = 0;
+
+        entradasRestantes.forEach(h => {
+            if (h.probabilidad > probabilidadMax) probabilidadMax = h.probabilidad;
+            if (h.impacto > impactoMax) impactoMax = h.impacto;
+        });
+
+        // Actualizar la lista de riesgos con los valores más altos restantes
+        const riesgo = riesgos.find(r => r.nombre === entradaEliminada.riesgo);
+        riesgo.probabilidad = probabilidadMax;
+        riesgo.impacto = impactoMax;
+    } else {
+        // Si no quedan entradas, restablecer el riesgo en la lista a 0
+        const riesgo = riesgos.find(r => r.nombre === entradaEliminada.riesgo);
+        riesgo.probabilidad = 0;
+        riesgo.impacto = 0;
+    }
+
+    renderizarRiesgos();
     renderizarHistorial();
 }
 
@@ -118,21 +165,17 @@ document.getElementById("agregar-riesgo").addEventListener("click", function () 
     const mensajeError = document.getElementById("mensaje-error");
 
     if (probabilidades.includes(probabilidad) && impactos.includes(impacto)) {
-        const riesgo = riesgos.find((r) => r.nombre === riesgoSeleccionado);
-        riesgo.probabilidad = probabilidad;
-        riesgo.impacto = impacto;
-
-        const nivelRiesgo = calcularNivelRiesgo(probabilidad, impacto);
-        const porcentajeRiesgo = calcularPorcentajeRiesgo(nivelRiesgo, maxImpacto).toFixed(2);
-
+        // Agregar al historial
         historial.push({
             riesgo: riesgoSeleccionado,
             probabilidad,
             impacto,
-            nivelRiesgo,
-            porcentajeRiesgo
+            nivelRiesgo: calcularNivelRiesgo(probabilidad, impacto),
+            porcentajeRiesgo: calcularPorcentajeRiesgo(calcularNivelRiesgo(probabilidad, impacto), maxImpacto).toFixed(2)
         });
 
+        // Actualizar la lista de riesgos
+        actualizarRiesgoLista(riesgoSeleccionado, probabilidad, impacto)
         actualizarStorage();
         renderizarRiesgos();
         renderizarHistorial();
